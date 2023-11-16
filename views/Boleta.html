@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Boleta</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">   
+    </head>
+    <body style="background-color:#c7c42f;">
+        <br>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-8"><h1>Boleta de Venta</h1></div>
+                            <div class="col-md-2"><h2 id="volver" class="btn btn-info">Volver</h2></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-5" id="resultado"></div>
+                            <div class="col-md-5">
+                                <div class="panel-group"> 
+                                    <div class="panel panel-success">
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-10">
+                                                <h4>Agregar servicio a la factura</h4><br>
+                                                <p>Tipo de Reserva:
+                                                    <select class="form-control" id="servicio">
+                                                        <option selected value="1">Desayuno - A</option>
+                                                        <option value="2">Desayuno - B</option>
+                                                        <option value="3">Almuerzo - A</option>
+                                                        <option value="4">Almuerzo - B</option>
+                                                        <option value="5">Cena - B</option>
+                                                        <option value="6">Cena - C</option>
+                                                    </select>
+                                                </p>
+                                                <p><button style="height:50px;width:150px" id="agregar" class="btn btn-success">Agregar</button></p>
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div><br>                
+                    </div>
+                </div> 
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" id="datosRes"></div>
+                            <div class="col-md-1"></div>
+                        </div><br>   
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" id="servicios"></div>
+                            <div class="col-md-1"></div>
+                        </div><br>             
+                    </div>
+                </div>
+                <div class="panel-group"> 
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2"><p>Fecha de emision: <input class="form-control" type="text" id="fecEmision" placeholder="Fecha de emision"></p></div>
+                            <div class="col-md-2"><p>Tipo Moneda: <input class="form-control" type="text" id="tipoMoneda" placeholder="Tipo moneda"></p></div>
+                            <div class="col-md-2"><h4>Total: <label id="totalPagar"></label></h4></div>
+                            <div class="col-md-2"><button style="height:30px;width:150px" id="pagar" class="btn btn-success">Pagar</button></div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </div>               
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script>            
+            var consulta1 = "";
+            var ids = [];
+            var contador = 0; 
+            function mostrar(pag){
+                var studentdata = { pagina: pag};
+                var consulta = "";
+                $("#resultado").empty();
+                $.ajax({  
+      			    url: "/huespedController/reservaHuespedes",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            consulta += '<div class="panel-group"><div class="panel panel-success"><p><h4>Nombres y Apellidos: '+data[i].nombre+' '+data[i].apePat+' '+data[i].apeMat+'</h4></p></div></div>';
+                        }
+                        $("#resultado").append(consulta);
+      			    }
+    		    });
+            }
+            function datosReserva(){
+                var studentdata = { };
+                var consulta = "";
+                $("#datosRes").empty();
+                $.ajax({  
+      			    url: "/reservaController/datosReservas",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            contador = contador + data[i].total;
+                            consulta += '<div class="row"><div class="col-md-2">Habitacion: '+data[i].habitacion+'</div><div class="col-md-2">Precio: '+data[i].precio+'</div><div class="col-md-2">Dias: '+data[i].dias+'</div><div class="col-md-2"></div><div class="col-md-4">Total: '+data[i].total+'</div></div>';
+                        }
+                        $("#datosRes").append(consulta);
+                        $("#totalPagar").text(contador);
+      			    }
+    		    });
+            }
+            function agregar(id){
+                var studentdata = {idSer: id};
+                $("#servicios").empty();
+                $.ajax({  
+      			    url: "/servicioController/agregarServicio",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            contador = contador + data[i].costo;
+                            consulta1 += '<div class="row"><div class="col-md-2">Nombre de servicio: '+data[i].nombre+'</div><div class="col-md-6">Categoria: '+data[i].categoria+'</div><div class="col-md-4">Costo: '+data[i].costo+'</div></div>';
+                        }
+                        $("#servicios").append(consulta1);
+                        $("#totalPagar").text(contador);
+      			    }
+    		    });
+            }
+            mostrar(1);
+            datosReserva();
+            $("#volver").on("click", function() {
+			    location.href='Menu.html';
+            });
+            $("#agregar").on("click", function() {
+                id = $("#servicio").val()
+                ids.push(id);
+			    agregar(id);
+            });
+            $("#pagar").on("click", function() {
+                var idArray = ids.join(',');
+                var studentdata = { fecEmi: $("#fecEmision").val(), tipo: $("#tipoMoneda").val(), total: contador, ids: idArray};
+                $.ajax({  
+      			    url: "/servicioController/pagarFactura",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        if(data.estado == 1){
+						    alert("Se registro la reserva");
+					    }
+					    else{
+						    alert("Error"); 
+					    } 
+      			    }
+    		    });
+                alert("Se ha guardado el pago de la factura");
+            });
+        </script>
+    </body> 
+</html>

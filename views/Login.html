@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hoteles</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        </head>
+    <body style="background-color:#c7c42f;">
+        <br>
+        <section>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10" style="text-align: center"><img style="height: 200px;width:200px"src="imagenes/hotel.png"/></div>
+                <div class="col-md-1"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="panel-group">
+                        <div class="panel panel-info">
+                            <div class="panel-heading" align="center">LOGIN</div>
+                            <div class="panel-body" align="center">
+                                <h2 align="center">USER LOGIN</h2>
+                                <input class="form-control" type="text" id="correo" placeholder="Correo de usuario"><br><br>
+                                <button id="boton" class="btn btn-warning">Entrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </section>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script>           
+            $("#boton").on( "click", function() {
+			    var studentdata = { correo: $("#correo").val()};
+			    $.ajax({  
+      			    url: "/empleadoController/ingresarSistema",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) { 
+      				    if(data.estado >= 1){
+						    location.href='Menu.html';
+					    }
+					    else{
+						    alert("error de logueo"); 
+					    }   			
+      			    }
+    		    });
+            });
+        </script>
+    </body> 
+</html>

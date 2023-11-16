@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Reservas</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">   
+    </head>
+    <body style="background-color:#c7c42f;">
+        <br>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-8"><h1>Ver Reservas</h1></div>
+                            <div class="col-md-2"><h2 id="volver" class="btn btn-info">Volver</h2></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" id="resultado"></div>
+                            <div class="col-md-1"></div>
+                        </div><br> 
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-4" style="text-align: center"><label id="atras" class="btn btn-info">Atras</label></div>
+                            <div class="col-md-2" style="text-align: center"><label id="pagina">1</label></div>
+                            <div class="col-md-4" style="text-align: center"><label id="adelante" class="btn btn-info">Adelante</label></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script>
+            function mostrar(pag){
+                var studentdata = { pagina: pag};
+                var consulta = "";
+                $("#resultado").empty();
+                $.ajax({  
+      			    url: "/reservaController/consultarReservas",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            consulta += '<div class="alert alert-info"><div class="row"><div class="col-md-2"></div><div class="col-md-4"><p>Numero de Habitacion:'+data[i].habitacion+'</p></div><div class="col-md-3"><p>Precio de estadia:'+data[i].precio+'</p></div><div class="col-md-1" hidden>'+data[i].idRes+'</div><div class="col-md-1" hidden>'+data[i].precio+'</div><div class="col-md-1"><p><button class="btn btn-info" id="ver">Pagar</button></p></div></div></div>';
+                        }
+                        $("#resultado").append(consulta);
+                        $("button").on('click',function(){   
+                            var currentRow=$(this).closest("div.row");
+                            var col1=currentRow.find("div:eq(3)").html();
+                            var col2=currentRow.find("div:eq(4)").html();
+                            var studentdata = { idReserva: col1,precio: col2}; 
+                            $.ajax({  
+      			                url: "/reservaController/obtenerDatos",  
+      			                dataType: 'json',  
+      			                type: 'POST',  
+      			                data: studentdata,  
+      			                success: function(data) { 
+                                    location.href='Boleta.html';
+      			                }
+    		                });
+                        });
+      			    }
+    		    });
+            }
+            mostrar(1);
+            $("#atras").on("click", function() {
+			    pagina = $("#pagina").text();               
+                pagina = parseInt(pagina) - 1;
+                $("#pagina").text(pagina);  
+                mostrar(pagina);             
+            });
+            $("#adelante").on("click", function() {
+			    pagina = $("#pagina").text();                
+                pagina = parseInt(pagina) + 1;
+                $("#pagina").text(pagina);
+                mostrar(pagina);
+            });
+            $("#volver").on("click", function() {
+			    location.href='Menu.html';
+            });
+        </script>
+    </body> 
+</html>

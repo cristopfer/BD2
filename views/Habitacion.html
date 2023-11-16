@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Habitaciones</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">   
+    </head>
+    <body style="background-color:#c7c42f;">
+        <br>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-8"><h1>HABITACIONES</h1></div>
+                            <div class="col-md-2"><a class="btn btn-info" href="Menu.html" >Volver</a></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" id="resultado"></div>
+                            <div class="col-md-1"></div>
+                        </div><br> 
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-4" style="text-align: center"><label id="atras" class="btn btn-info">Atras</label></div>
+                            <div class="col-md-2" style="text-align: center"><label id="pagina">1</label></div>
+                            <div class="col-md-4" style="text-align: center"><label id="adelante" class="btn btn-info">Adelante</label></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script>
+            function mostrar(pag){
+                var studentdata = { pagina: pag};
+                var consulta = "";
+                $("#resultado").empty();
+                $.ajax({  
+      			    url: "/habitacionController/listaHabitacionPagina",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            consulta += '<div '+(data[i].estado == 1 ? 'class="alert alert-success"': (data[i].estado == 2 ?'class="alert alert-info"':(data[i].estado == 3 ?'class="alert alert-warning"':'class="alert alert-danger"')))+'><div class="row"><div class="col-md-2"></div><div class="col-md-6"><p>Numero de Habitacion:'+data[i].habitacion+'</p><p>Tipo:'+data[i].tipo+'</p><p>Capacidad:'+data[i].capacidad+'</p><p>Precio:'+data[i].precio+'</p></div><div class="col-md-1" hidden>'+data[i].idHabitacion+'</div><div class="col-md-3"><p>Disponible:'+(data[i].estado == 1 ? 'disponible': (data[i].estado == 2 ?'reservado':(data[i].estado == 3 ?'mantenimiento':'ocupado')))+'</p><p><button class="btn btn-info" id="ver">Reservar</button></p></div></div></div>';
+                        }
+                        $("#resultado").append(consulta);
+                        $("button").on('click',function(){   
+                            var currentRow=$(this).closest("div.row");
+                            var col1=currentRow.find("div:eq(2)").html();
+                            var studentdata = { idHabitacion: col1}; 
+                            $.ajax({  
+      			                url: "/habitacionController/obtenerIdHabitacion",  
+      			                dataType: 'json',  
+      			                type: 'POST',  
+      			                data: studentdata,  
+      			                success: function(data) { 
+                                    location.href='Reserva.html';
+      			                }
+    		                });
+                        });
+      			    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+    		    });
+            }
+            mostrar(1);
+            $("#atras").on("click", function() {
+			    pagina = $("#pagina").text();               
+                pagina = parseInt(pagina) - 1;
+                $("#pagina").text(pagina);  
+                mostrar(pagina);             
+            });
+            $("#adelante").on("click", function() {
+			    pagina = $("#pagina").text();                
+                pagina = parseInt(pagina) + 1;
+                $("#pagina").text(pagina);
+                mostrar(pagina);
+            });
+        </script>
+    </body> 
+</html>

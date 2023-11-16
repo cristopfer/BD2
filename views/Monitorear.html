@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>    
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Monitorear Reservas</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">   
+    </head>
+    <body style="background-color:#c7c42f;">
+        <br>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-8"><h1>Monitorear Reservas</h1></div>
+                            <div class="col-md-2"><h2 id="volver" class="btn btn-info">Volver</h2></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="panel-group">            
+                    <div class="panel panel-success" style="background-color:#9aafdd;"><br>
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" id="resultado"></div>
+                            <div class="col-md-1"></div>
+                        </div><br> 
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-4" style="text-align: center"><label id="atras" class="btn btn-info">Atras</label></div>
+                            <div class="col-md-2" style="text-align: center"><label id="pagina">1</label></div>
+                            <div class="col-md-4" style="text-align: center"><label id="adelante" class="btn btn-info">Adelante</label></div>
+                            <div class="col-md-1"></div>
+                        </div><br>               
+                    </div>
+                </div>                
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.js"></script>
+        <script>
+            function mostrar(pag){
+                var studentdata = { pagina: pag};
+                var consulta = "";
+                $("#resultado").empty();
+                $.ajax({  
+      			    url: "/huespedController/monitorearHuesped",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        for(var i = 0; i < data.length; i++){
+                            consulta += '<div class="alert alert-warning"><div class="row"><div class="col-md-2"></div><div class="col-md-6"><p>Hora de llegada:'+data[i].checkIn+'</p><p>Hora de salida:'+data[i].checkOut+'</p><p>Nombre:'+data[i].nombre+'</p><p>Apellido:'+data[i].apePat+' '+data[i].apeMat+'</p><p>Habitacion:'+data[i].habitacion+'</p></div><div class="col-md-1" hidden>'+data[i].idResHue+'</div><div class="col-md-3"><p><button style="height:40px;width:150px" class="btn btn-info">Anotar Llegada</button></p><p><a style="height:40px;width:150px" class="btn btn-info">Anotar Salida</a></p></div></div></div>';
+                        }
+                        $("#resultado").append(consulta);
+                        $("button").on('click',function(){   
+                            var currentRow=$(this).closest("div.row");
+                            var col1=currentRow.find("div:eq(2)").html();
+                            llegada(parseInt(col1));                          
+                        });
+                        $("a").on('click',function(){   
+                            var currentRow=$(this).closest("div.row");
+                            var col1=currentRow.find("div:eq(2)").html();
+                            salida(parseInt(col1)); 
+                        });
+      			    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+    		    });
+            }
+            function llegada(id){
+                var studentdata = { id: id};
+                $.ajax({  
+      			    url: "/huespedController/llegada",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        location.href='Monitorear.html'; 
+      			    }
+    		    });
+            }
+            function salida(id){
+                var studentdata = { id: id};
+                $.ajax({  
+      			    url: "/huespedController/salida",  
+      			    dataType: 'json',  
+      			    type: 'POST',  
+      			    data: studentdata,  
+      			    success: function(data) {     
+                        location.href='Monitorear.html'; 
+      			    }
+    		    });
+            }
+            mostrar(1);
+            $("#atras").on("click", function() {
+			    pagina = $("#pagina").text();               
+                pagina = parseInt(pagina) - 1;
+                $("#pagina").text(pagina);  
+                mostrar(pagina);             
+            });
+            $("#adelante").on("click", function() {
+			    pagina = $("#pagina").text();                
+                pagina = parseInt(pagina) + 1;
+                $("#pagina").text(pagina);
+                mostrar(pagina);
+            });
+            $("#volver").on("click", function() {
+			    location.href='Menu.html';
+            });
+        </script>
+    </body> 
+</html>
